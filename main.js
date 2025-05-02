@@ -83,7 +83,7 @@ client.once('ready', async () => {
         try {
             const channel = await client.channels.fetch(notifyChannelId);
             if (channel) {
-                await channel.send(`${notifyRoles} ✅ ${client.user.tag} is now online!`);
+                await channel.send(`${notifyRoles} ✅ ${client.user.tag} has been updated!`);
             }
         } catch (err) {
             console.warn(`⚠️ Failed to send startup message:`, err);
