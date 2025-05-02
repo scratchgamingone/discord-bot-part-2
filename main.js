@@ -75,7 +75,7 @@ client.on(Events.InteractionCreate, async interaction => {
 
 // Bot ready
 client.once('ready', async () => {
-    console.log(`✅ ${client.user.tag} is online!`);
+    console.log(`✅ ${client.user.tag} has been updated!`);
     const notifyChannelId = process.env.NOTIFY_BOT_ONLINE_CHANNEL_ID;
     const notifyRoles = process.env.NOTIFY_BOT_ONLINE_ROLES_ID?.split(',').map(id => `<@&${id.trim()}>`).join(' ') || '';
 
