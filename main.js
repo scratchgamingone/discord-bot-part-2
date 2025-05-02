@@ -1,10 +1,9 @@
-// main_second_bot.js - Run SECOND bot using shared codebase
+// main.js - For Second Bot Setup
 require('dotenv').config();
 const { Client, GatewayIntentBits, Collection, Events, REST, Routes } = require('discord.js');
 const fs = require('fs');
 
-// === Setup SECOND bot ===
-const clientSecond = new Client({
+const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMessages,
@@ -13,53 +12,46 @@ const clientSecond = new Client({
     ]
 });
 
-clientSecond.commands = new Collection();
-const prefixSecond = process.env.COMMAND_PREFIX?.trim() || '!';
-const commandsSecond = [];
+client.commands = new Collection();
+const prefix = process.env.COMMAND_PREFIX?.trim() || '!';
+const commands = [];
 
-// Load commands for second bot
-const generalCommandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
-for (const file of generalCommandFiles) {
+// Load commands from ./commands folder
+const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
     if (command.data && command.execute) {
-        clientSecond.commands.set(command.data.name, command);
-        commandsSecond.push(command.data.toJSON());
+        client.commands.set(command.data.name, command);
+        commands.push(command.data.toJSON());
     }
 }
 
-const adminCommandFiles = fs.readdirSync('./commands/admin').filter(file => file.endsWith('.js'));
-for (const file of adminCommandFiles) {
-    const command = require(`./commands/admin/${file}`);
-    if (command.data && command.execute) {
-        clientSecond.commands.set(command.data.name, command);
-        commandsSecond.push(command.data.toJSON());
-    }
-}
-
-const restSecond = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN_SECOND);
+// Register slash commands
+const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
 (async () => {
     try {
-        console.log('🚀 Registering SECOND bot application (/) commands...');
-        await restSecond.put(
-            Routes.applicationGuildCommands(process.env.CLIENT_ID_SECOND, process.env.GUILD_ID),
-            { body: commandsSecond }
+        console.log('🚀 Registering slash commands...');
+        await rest.put(
+            Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.GUILD_ID),
+            { body: commands }
         );
-        console.log('✅ Successfully registered slash commands for SECOND bot.');
+        console.log('✅ Successfully registered slash commands.');
     } catch (error) {
-        console.error('❌ Error registering slash commands for SECOND bot:', error);
+        console.error('❌ Error registering slash commands:', error);
     }
 })();
 
-clientSecond.on(Events.InteractionCreate, async interaction => {
+// Listen for interactions
+client.on(Events.InteractionCreate, async interaction => {
     if (!interaction.isChatInputCommand()) return;
 
-    const command = clientSecond.commands.get(interaction.commandName);
+    const command = client.commands.get(interaction.commandName);
     if (!command) return;
 
     try {
         await command.execute(interaction);
     } catch (error) {
-        console.error(`❌ Error executing command ${interaction.commandName} (SECOND bot):`, error);
+        console.error(`❌ Error executing command ${interaction.commandName}:`, error);
         await interaction.reply({
             content: '❌ An error occurred while executing this command.',
             ephemeral: true
@@ -67,8 +59,23 @@ clientSecond.on(Events.InteractionCreate, async interaction => {
     }
 });
 
-clientSecond.once('ready', () => {
-    console.log(`✅ SECOND bot logged in as ${clientSecond.user.tag}!`);
+client.once('ready', () => {
+    console.log(`✅ Bot logged in as ${client.user.tag}!`);
 });
 
-clientSecond.login(process.env.DISCORD_TOKEN_SECOND);
+client.login(process.env.DISCORD_TOKEN);
+
+
+// --- test.js in commands folder ---
+
+// commands/test.js
+const { SlashCommandBuilder } = require('discord.js');
+
+module.exports = {
+    data: new SlashCommandBuilder()
+        .setName('test')
+        .setDescription('🔧 Test command to confirm the bot is working.'),
+    async execute(interaction) {
+        await interaction.reply('✅ **Test successful!** The second bot is up and running.');
+    }
+};
