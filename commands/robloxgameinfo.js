@@ -11,6 +11,7 @@ module.exports = {
         const gameId = process.env.ROBLOX_GAME_ID;
 
         try {
+            // Get universe info
             const response = await axios.get(`https://games.roblox.com/v1/games?universeIds=${gameId}`);
             const gameData = response.data.data[0];
 
@@ -20,6 +21,10 @@ module.exports = {
                     ephemeral: true
                 });
             }
+
+            // Get game icon thumbnail
+            const thumbResponse = await axios.get(`https://thumbnails.roblox.com/v1/games/icons?universeIds=${gameId}&size=512x512&format=Png&isCircular=false`);
+            const thumbnailUrl = thumbResponse.data.data[0]?.imageUrl || '';
 
             const embed = new EmbedBuilder()
                 .setTitle(gameData.name)
@@ -33,7 +38,7 @@ module.exports = {
                     { name: '💾 Visits', value: `${gameData.visits}`, inline: true },
                     { name: '⏱️ Created', value: new Date(gameData.created).toLocaleDateString(), inline: true }
                 )
-                .setThumbnail(`https://thumbnails.roblox.com/v1/games/icons?universeIds=${gameId}&size=512x512&format=Png&isCircular=false`)
+                .setThumbnail(thumbnailUrl)
                 .setColor(0x00AAFF);
 
             await interaction.reply({ embeds: [embed] });
