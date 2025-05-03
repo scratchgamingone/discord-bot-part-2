@@ -11,18 +11,19 @@ module.exports = {
         const placeId = process.env.ROBLOX_GAME_ID;
 
         try {
-            // Get place details
             const response = await axios.get(`https://games.roblox.com/v1/places/${placeId}`);
-            const gameData = response.data;
+            console.log('✅ Raw API response:', response.data);  // <-- Add this log
 
-            if (!gameData) {
+            if (response.data.errors) {
+                console.error('❌ API returned error:', response.data.errors);
                 return interaction.reply({
-                    content: '❌ Could not find game data. Please check the ROBLOX_GAME_ID.',
+                    content: '❌ Roblox API returned an error: ' + response.data.errors[0]?.message,
                     ephemeral: true
                 });
             }
 
-            // Get game icon thumbnail
+            const gameData = response.data;
+
             const thumbResponse = await axios.get(`https://thumbnails.roblox.com/v1/places/thumbnails?placeIds=${placeId}&size=512x512&format=Png&isCircular=false`);
             const thumbnailUrl = thumbResponse.data.data[0]?.imageUrl || '';
 
@@ -41,7 +42,7 @@ module.exports = {
             await interaction.reply({ embeds: [embed] });
 
         } catch (error) {
-            console.error('❌ Error fetching Roblox game info:', error);
+            console.error('❌ Error fetching Roblox game info (axios error):', error);
             await interaction.reply({
                 content: '❌ There was an error fetching the Roblox game information.',
                 ephemeral: true
