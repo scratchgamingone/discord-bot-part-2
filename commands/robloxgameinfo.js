@@ -8,12 +8,12 @@ module.exports = {
         .setDescription('Fetches information about the configured Roblox game.'),
 
     async execute(interaction) {
-        const gameId = process.env.ROBLOX_GAME_ID;
+        const placeId = process.env.ROBLOX_GAME_ID;
 
         try {
-            // Get universe info
-            const response = await axios.get(`https://games.roblox.com/v1/games?universeIds=${gameId}`);
-            const gameData = response.data.data[0];
+            // Get place details
+            const response = await axios.get(`https://games.roblox.com/v1/places/${placeId}`);
+            const gameData = response.data;
 
             if (!gameData) {
                 return interaction.reply({
@@ -23,20 +23,17 @@ module.exports = {
             }
 
             // Get game icon thumbnail
-            const thumbResponse = await axios.get(`https://thumbnails.roblox.com/v1/games/icons?universeIds=${gameId}&size=512x512&format=Png&isCircular=false`);
+            const thumbResponse = await axios.get(`https://thumbnails.roblox.com/v1/places/thumbnails?placeIds=${placeId}&size=512x512&format=Png&isCircular=false`);
             const thumbnailUrl = thumbResponse.data.data[0]?.imageUrl || '';
 
             const embed = new EmbedBuilder()
                 .setTitle(gameData.name)
                 .setDescription(gameData.description || 'No description provided.')
-                .setURL(`https://www.roblox.com/games/${gameId}`)
+                .setURL(`https://www.roblox.com/games/${placeId}`)
                 .addFields(
-                    { name: '👥 Players', value: `${gameData.playing}`, inline: true },
-                    { name: '⭐ Favorites', value: `${gameData.favoritedCount}`, inline: true },
-                    { name: '👍 Likes', value: `${gameData.likes}`, inline: true },
-                    { name: '👎 Dislikes', value: `${gameData.dislikes}`, inline: true },
-                    { name: '💾 Visits', value: `${gameData.visits}`, inline: true },
-                    { name: '⏱️ Created', value: new Date(gameData.created).toLocaleDateString(), inline: true }
+                    { name: '👥 Max Players', value: `${gameData.maxPlayers}`, inline: true },
+                    { name: '⏱️ Created', value: new Date(gameData.created).toLocaleDateString(), inline: true },
+                    { name: '🛠️ Updated', value: new Date(gameData.updated).toLocaleDateString(), inline: true }
                 )
                 .setThumbnail(thumbnailUrl)
                 .setColor(0x00AAFF);
