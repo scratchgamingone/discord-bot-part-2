@@ -4,7 +4,7 @@ require('dotenv').config();
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('player_count_in_gae')
+    .setName('player_count_in_game')
     .setDescription('Shows the current number of players in your Roblox game'),
 
   async execute(interaction) {
