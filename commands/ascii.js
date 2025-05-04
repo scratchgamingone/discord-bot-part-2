@@ -3,7 +3,7 @@ const { SlashCommandBuilder } = require('discord.js');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('ascii')
-        .setDescription('Convert a number to its ASCII character')
+        .setDescription('Convert a number to its ASCII character with explanation')
         .addIntegerOption(option =>
             option.setName('number')
                 .setDescription('Enter a number to convert to ASCII')
@@ -18,6 +18,8 @@ module.exports = {
 
         const asciiChar = String.fromCharCode(number);
 
-        await interaction.reply(`✅ The ASCII character for **${number}** is: \`${asciiChar}\``);
+        await interaction.reply(
+            `✅ The ASCII character for the number **${number}** is: **"${asciiChar}"**`
+        );
     },
 };
