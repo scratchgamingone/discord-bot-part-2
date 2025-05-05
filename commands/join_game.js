@@ -9,8 +9,13 @@ module.exports = {
     async execute(interaction) {
         try {
             const gameId = process.env.ROBLOX_GAME_ID;
+
+            // Debug log to check if env loaded
+            console.log('✅ ROBLOX_GAME_ID loaded:', gameId);
+
             if (!gameId) {
-                return interaction.reply({ content: '❌ Roblox Game ID is not set in the .env file.', ephemeral: true });
+                await interaction.reply({ content: '❌ Roblox Game ID is not set in the .env file.', ephemeral: true });
+                return;
             }
 
             const robloxLink = `https://www.roblox.com/games/${gameId}/join`;
@@ -29,14 +34,26 @@ module.exports = {
             );
 
             await interaction.reply({
-                content: '🎮 Click below to join the Roblox game:',
+                content: '🎮 Click a button below to join the Roblox game:',
                 components: [row],
                 ephemeral: false
             });
 
         } catch (error) {
-            console.error('Error in /join_game command:', error);
-            await interaction.reply({ content: '❌ There was an error while executing this command.', ephemeral: true });
+            console.error('❌ Error inside /join_game command:', error);
+
+            // Check if a reply was already sent
+            if (interaction.replied || interaction.deferred) {
+                await interaction.followUp({
+                    content: '❌ There was an error while executing this command.',
+                    ephemeral: true
+                }).catch(console.error);
+            } else {
+                await interaction.reply({
+                    content: '❌ There was an error while executing this command.',
+                    ephemeral: true
+                }).catch(console.error);
+            }
         }
     },
 };
