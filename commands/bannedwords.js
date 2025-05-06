@@ -10,7 +10,58 @@ const client = new Client({
     ],
 });
 
-const bannedWords = ['nigga', 'fuck', 'gay']; // Edit this list easily!
+const bannedWords = ['nigga',     'fuck',
+    'fucking',
+    'shit',
+    'bullshit',
+    'bitch',
+    'asshole',
+    'dick',
+    'pussy',
+    'cock',
+    'cocksucker',
+    'motherfucker',
+    'bastard',
+    'damn',
+    'crap',
+    'piss',
+    'slut',
+    'whore',
+    'cunt',
+    'douche',
+    'twat',
+    'fml',
+    'stfu',
+    'gtfo',
+    'kys',        // kill yourself
+    'kms',        // kill myself
+    'idgaf',
+    'lmao',
+    'lmfao',
+    'rekt',
+    'ez',
+    'noob',
+    'trash',
+    'loser',
+    'clown',
+    'cringe',
+    'sigma',
+    'beta',
+    'omega',
+    'npc',
+    'ratio',
+    'skill issue',
+    'bozo',
+    'cope',
+    'seethe',
+    'mald',
+    'skdibi',
+    'rizz',
+    'fanum tax',
+    'skdibi toilet',
+    'cap'
+    'based'
+            ]; // Edit this list easily!
 
 client.on('messageCreate', async (message) => {
     if (message.author.bot) return;
@@ -23,7 +74,7 @@ client.on('messageCreate', async (message) => {
                 reason: `Used banned word: ${message.content}`,
                 deleteMessageSeconds: 60 * 60 * 24 // Optional: delete last 24h of their messages
             });
-            console.log(`Banned ${message.author.tag} for saying a banned word.`);
+            console.log(`Banned ${message.author.tag} for saying a banned word (This is a permanament ban non-appealable).`);
         } catch (error) {
             console.error(`Failed to ban ${message.author.tag}:`, error);
         }
